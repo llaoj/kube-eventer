@@ -15,10 +15,9 @@ jobs:
         shell: bash
         run: |
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          tag_name=$(echo ${GITHUB_REF#refs/tags/})
-          echo '::set-output name=tag_name::$tag_name'
+          echo '::set-output name=tag_name::$(echo ${GITHUB_REF#refs/tags/})'
 
-      - name: docker build
+      - name: Docker build & push
         run: |
           IMAGE=${{ secrets.REGISTRY }}/llaoj/kube-eventer-amd64:${{ steps.vars.outputs.tag_name }}-${{ steps.vars.outputs.sha_short }}-llaoj
           docker build -f deploy/Dockerfile -t $IMAGE .
