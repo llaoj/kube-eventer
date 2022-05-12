@@ -10,11 +10,17 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo '::set-output name=branch::${GITHUB_REF#refs/heads/}'
+          echo '::set-output name=tag::${GITHUB_REF#refs/tags/}'
+
       - name: docker build
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          GIT_COMMIT=$(git rev-parse --short "$GITHUB_SHA")
-          IMAGE=${{ secrets.REGISTRY }}/llaoj/kube-eventer-amd64:$VERSION-$(GIT_COMMIT)-llaoj
+          IMAGE=${{ secrets.REGISTRY }}/llaoj/kube-eventer-amd64:${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.sha_short }}-llaoj
           docker build -f deploy/Dockerfile -t $IMAGE .
           docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY }}
           docker push $IMAGE
