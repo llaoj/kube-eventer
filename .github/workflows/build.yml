@@ -15,8 +15,8 @@ jobs:
         shell: bash
         run: |
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo '::set-output name=branch::${GITHUB_REF#refs/heads/}'
-          echo '::set-output name=tag::${GITHUB_REF#refs/tags/}'
+          echo '::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})'
+          echo '::set-output name=tag::$(echo ${GITHUB_REF#refs/tags/})'
 
       - name: docker build
         run: |
